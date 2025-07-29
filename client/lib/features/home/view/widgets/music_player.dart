@@ -15,8 +15,9 @@ class MusicPlayer extends ConsumerWidget {
     final currentSong = ref.watch(currentSongNotifierProvider);
     final songNotifier = ref.read(currentSongNotifierProvider.notifier);
 
-    final userFavorites = ref
-        .watch(currentUserNotifierProvider.select((data) => data!.favorites));
+    final userFavorites = ref.watch(
+      currentUserNotifierProvider.select((data) => data!.favorites),
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -24,10 +25,7 @@ class MusicPlayer extends ConsumerWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            hexToColor(currentSong!.hex_code),
-            const Color(0xff121212),
-          ],
+          colors: [hexToColor(currentSong!.hex_code), const Color(0xff121212)],
         ),
       ),
       child: Scaffold(
@@ -64,9 +62,7 @@ class MusicPlayer extends ConsumerWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: NetworkImage(
-                          currentSong.thumbnail_url,
-                        ),
+                        image: NetworkImage(currentSong.thumbnail_url),
                         fit: BoxFit.cover,
                       ),
                       borderRadius: BorderRadius.circular(10),
@@ -107,9 +103,7 @@ class MusicPlayer extends ConsumerWidget {
                         onPressed: () async {
                           await ref
                               .read(homeViewModelProvider.notifier)
-                              .favSong(
-                                songId: currentSong.id,
-                              );
+                              .favSong(songId: currentSong.id);
                         },
                         icon: Icon(
                           userFavorites
@@ -125,65 +119,65 @@ class MusicPlayer extends ConsumerWidget {
                   ),
                   const SizedBox(height: 15),
                   StreamBuilder(
-                      stream: songNotifier.audioPlayer!.positionStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const SizedBox();
-                        }
-                        final position = snapshot.data;
-                        final duration = songNotifier.audioPlayer!.duration;
-                        double sliderValue = 0.0;
-                        if (position != null && duration != null) {
-                          sliderValue =
-                              position.inMilliseconds / duration.inMilliseconds;
-                        }
+                    stream: songNotifier.audioPlayer!.positionStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox();
+                      }
+                      final position = snapshot.data;
+                      final duration = songNotifier.audioPlayer!.duration;
+                      double sliderValue = 0.0;
+                      if (position != null && duration != null) {
+                        sliderValue =
+                            position.inMilliseconds / duration.inMilliseconds;
+                      }
 
-                        return Column(
-                          children: [
-                            SliderTheme(
-                              data: SliderTheme.of(context).copyWith(
-                                activeTrackColor: Pallete.whiteColor,
-                                inactiveTrackColor:
-                                    Pallete.whiteColor.withOpacity(0.117),
-                                thumbColor: Pallete.whiteColor,
-                                trackHeight: 4,
-                                overlayShape: SliderComponentShape.noOverlay,
-                              ),
-                              child: Slider(
-                                value: sliderValue,
-                                min: 0,
-                                max: 1,
-                                onChanged: (val) {
-                                  sliderValue = val;
-                                },
-                                onChangeEnd: songNotifier.seek,
-                              ),
+                      return Column(
+                        children: [
+                          SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              activeTrackColor: Pallete.whiteColor,
+                              inactiveTrackColor: Pallete.whiteColor
+                                  .withOpacity(0.117),
+                              thumbColor: Pallete.whiteColor,
+                              trackHeight: 4,
+                              overlayShape: SliderComponentShape.noOverlay,
                             ),
-                            Row(
-                              children: [
-                                Text(
-                                  '${position?.inMinutes}:${(position?.inSeconds ?? 0) < 10 ? '0${position?.inSeconds}' : position?.inSeconds}',
-                                  style: const TextStyle(
-                                    color: Pallete.subtitleText,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ),
-                                const Expanded(child: SizedBox()),
-                                Text(
-                                  '${duration?.inMinutes}:${(duration?.inSeconds ?? 0) < 10 ? '0${duration?.inSeconds}' : duration?.inSeconds}',
-                                  style: const TextStyle(
-                                    color: Pallete.subtitleText,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ),
-                              ],
+                            child: Slider(
+                              value: sliderValue,
+                              min: 0,
+                              max: 1,
+                              onChanged: (val) {
+                                sliderValue = val;
+                              },
+                              onChangeEnd: songNotifier.seek,
                             ),
-                          ],
-                        );
-                      }),
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                '${position?.inMinutes}: ${(position?.inSeconds ?? 0) % 60 < 10 ? '0${(position?.inSeconds ?? 0) % 60}' : (position?.inSeconds ?? 0) % 60}',
+                                style: const TextStyle(
+                                  color: Pallete.subtitleText,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                              const Expanded(child: SizedBox()),
+                              Text(
+                                '${duration?.inMinutes}: ${(duration?.inSeconds ?? 0) % 60 < 10 ? '0${(duration?.inSeconds ?? 0) % 60}' : (duration?.inSeconds ?? 0) % 60}',
+                                style: const TextStyle(
+                                  color: Pallete.subtitleText,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                   const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -247,7 +241,7 @@ class MusicPlayer extends ConsumerWidget {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
